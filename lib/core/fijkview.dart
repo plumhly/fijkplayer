@@ -118,6 +118,7 @@ class FijkFit {
 /// The most important is a Texture which display the read video frame.
 class FijkView extends StatefulWidget {
   FijkView({
+    Key key,
     @required this.player,
     this.width,
     this.height,
@@ -128,7 +129,8 @@ class FijkView extends StatefulWidget {
     this.cover,
     this.fs = true,
     this.onDispose,
-  }) : assert(player != null);
+  }) : assert(player != null),
+    super(key: key);
 
   /// The player that need display video by this [FijkView].
   /// Will be passed to [panelBuilder].
