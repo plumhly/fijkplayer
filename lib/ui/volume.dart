@@ -63,7 +63,7 @@ class _FijkSliderToastState extends State<_FijkSliderToast> {
   @override
   void dispose() {
     super.dispose();
-    subs?.cancel();
+    subs.cancel();
   }
 
   @override

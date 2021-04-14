@@ -29,7 +29,7 @@ class FijkPlugin {
   static const MethodChannel _channel = const MethodChannel('befovy.com/fijk');
 
   static Future<int?> _createPlayer() {
-    return _channel.invokeMethod("createPlayer") ?? Future.value(-1);
+    return _channel.invokeMethod("createPlayer");
   }
 
   static Future<void> _releasePlayer(int? pid) {
