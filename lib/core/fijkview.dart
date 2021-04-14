@@ -137,7 +137,7 @@ class FijkView extends StatefulWidget {
   final FijkPlayer player;
 
   /// builder to build panel Widget
-  final FijkPanelWidgetBuilder panelBuilder;
+  final FijkPanelWidgetBuilder? panelBuilder;
 
   /// This method will be called when fijkView dispose.
   /// FijkData is managed inner FijkView. User can change fijkData in custom panel.
@@ -391,7 +391,7 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
   void _fijkValueListener() {
     if (!mounted) return;
 
-    FijkPanelWidgetBuilder panelBuilder = fView.panelBuilder;
+    FijkPanelWidgetBuilder? panelBuilder = fView.panelBuilder;
     Color color = fView.color;
     FijkFit fit = widget.fullScreen ? fView.fsFit : fView.fit;
     int textureId = widget.fijkViewState._textureId;
