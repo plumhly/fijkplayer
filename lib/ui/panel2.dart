@@ -23,12 +23,12 @@
 part of fijkplayer;
 
 FijkPanelWidgetBuilder fijkPanel2Builder(
-    {Key key,
+    {Key? key,
     final bool fill = false,
     final int duration = 4000,
     final bool doubleTap = true,
     final bool snapShot = false,
-    final VoidCallback onBack}) {
+    final VoidCallback? onBack}) {
   return (FijkPlayer player, FijkData data, BuildContext context, Size viewSize,
       Rect texturePos) {
     return _FijkPanel2(
@@ -49,7 +49,7 @@ FijkPanelWidgetBuilder fijkPanel2Builder(
 class _FijkPanel2 extends StatefulWidget {
   final FijkPlayer player;
   final FijkData data;
-  final VoidCallback onBack;
+  final VoidCallback? onBack;
   final Size viewSize;
   final Rect texPos;
   final bool fill;
@@ -58,17 +58,17 @@ class _FijkPanel2 extends StatefulWidget {
   final int hideDuration;
 
   const _FijkPanel2(
-      {Key key,
-      @required this.player,
-      this.data,
-      this.fill,
+      {Key? key,
+      required this.player,
+      required this.data,
+      this.fill = false,
       this.onBack,
-      this.viewSize,
-      this.hideDuration,
-      this.doubleTap,
-      this.snapShot,
-      this.texPos})
-      : assert(player != null),
+      this.viewSize = Size.zero,
+      this.hideDuration = 0,
+      this.doubleTap = false,
+      this.snapShot = false,
+      this.texPos = Rect.zero,
+      }): assert(player != null),
         assert(
             hideDuration != null && hideDuration > 0 && hideDuration < 10000),
         super(key: key);
@@ -80,29 +80,29 @@ class _FijkPanel2 extends StatefulWidget {
 class __FijkPanel2State extends State<_FijkPanel2> {
   FijkPlayer get player => widget.player;
 
-  Timer _hideTimer;
+  Timer? _hideTimer;
   bool _hideStuff = true;
 
-  Timer _statelessTimer;
+  Timer? _statelessTimer;
   bool _prepared = false;
   bool _playing = false;
-  bool _dragLeft;
-  double _volume;
-  double _brightness;
+  bool? _dragLeft;
+  double _volume = 0;
+  double _brightness = 0;
 
   double _seekPos = -1.0;
   Duration _duration = Duration();
   Duration _currentPos = Duration();
   Duration _bufferPos = Duration();
 
-  StreamSubscription _currentPosSubs;
-  StreamSubscription _bufferPosSubs;
+  late StreamSubscription _currentPosSubs;
+  late StreamSubscription _bufferPosSubs;
 
-  StreamController<double> _valController;
+  late StreamController<double?> _valController;
 
   // snapshot
-  ImageProvider _imageProvider;
-  Timer _snapshotTimer;
+  ImageProvider? _imageProvider;
+  Timer? _snapshotTimer;
 
   // Is it needed to clear seek data in FijkData (widget.data)
   bool _needClearSeekData = true;
@@ -159,17 +159,17 @@ class __FijkPanel2State extends State<_FijkPanel2> {
   @override
   void dispose() {
     super.dispose();
-    _valController?.close();
+    _valController.close();
     _hideTimer?.cancel();
     _statelessTimer?.cancel();
     _snapshotTimer?.cancel();
-    _currentPosSubs?.cancel();
-    _bufferPosSubs?.cancel();
+    _currentPosSubs.cancel();
+    _bufferPosSubs.cancel();
     player.removeListener(_playerValueChanged);
   }
 
   double dura2double(Duration d) {
-    return d != null ? d.inMilliseconds.toDouble() : 0.0;
+    return d.inMilliseconds.toDouble();
   }
 
   void _playerValueChanged() {
@@ -242,7 +242,7 @@ class __FijkPanel2State extends State<_FijkPanel2> {
           widget.data.setValue(FijkData._fijkViewPanelVolume, v);
         }
         setState(() {
-          _volume = v;
+          _volume = v ?? 0;
           _valController.add(v);
         });
       });
@@ -250,12 +250,11 @@ class __FijkPanel2State extends State<_FijkPanel2> {
       // left, brightness
       _dragLeft = true;
       FijkPlugin.screenBrightness().then((v) {
-        if (widget.data != null &&
-            !widget.data.contains(FijkData._fijkViewPanelBrightness)) {
+        if (!widget.data.contains(FijkData._fijkViewPanelBrightness)) {
           widget.data.setValue(FijkData._fijkViewPanelBrightness, v);
         }
         setState(() {
-          _brightness = v;
+          _brightness = v ?? 0;
           _valController.add(v);
         });
       });
@@ -267,10 +266,10 @@ class __FijkPanel2State extends State<_FijkPanel2> {
   }
 
   void onVerticalDragUpdateFun(DragUpdateDetails d) {
-    double delta = d.primaryDelta / panelHeight();
+    double delta = (d.primaryDelta ?? 0) / panelHeight();
     delta = -delta.clamp(-1.0, 1.0);
     if (_dragLeft != null && _dragLeft == false) {
-      if (_volume != null) {
+      if (_volume > 0) {
         _volume += delta;
         _volume = _volume.clamp(0.0, 1.0);
         FijkVolume.setVol(_volume);
@@ -279,7 +278,7 @@ class __FijkPanel2State extends State<_FijkPanel2> {
         });
       }
     } else if (_dragLeft != null && _dragLeft == true) {
-      if (_brightness != null) {
+      if (_brightness > 0) {
         _brightness += delta;
         _brightness = _brightness.clamp(0.0, 1.0);
         FijkPlugin.setScreenBrightness(_brightness);
@@ -291,8 +290,8 @@ class __FijkPanel2State extends State<_FijkPanel2> {
   }
 
   void onVerticalDragEndFun(DragEndDetails e) {
-    _volume = null;
-    _brightness = null;
+    _volume = 0;
+    _brightness = 0;
   }
 
   Widget buildPlayButton(BuildContext context, double height) {
@@ -370,7 +369,7 @@ class __FijkPanel2State extends State<_FijkPanel2> {
   }
 
   Widget buildBottom(BuildContext context, double height) {
-    if (_duration != null && _duration.inMilliseconds > 0) {
+    if (_duration.inMilliseconds > 0) {
       return Row(
         children: <Widget>[
           buildPlayButton(context, height),
@@ -580,7 +579,7 @@ class __FijkPanel2State extends State<_FijkPanel2> {
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.yellowAccent, width: 3)),
             child:
-                Image(height: 200, fit: BoxFit.contain, image: _imageProvider),
+                Image(height: 200, fit: BoxFit.contain, image: _imageProvider!),
           ),
         ),
       );
@@ -593,9 +592,9 @@ class __FijkPanel2State extends State<_FijkPanel2> {
   Widget build(BuildContext context) {
     Rect rect = panelRect();
 
-    List ws = <Widget>[];
+    final ws = <Widget>[];
 
-    if (_statelessTimer != null && _statelessTimer.isActive) {
+    if (_statelessTimer != null && _statelessTimer!.isActive) {
       ws.add(buildStateless());
     } else if (player.state == FijkState.asyncPreparing) {
       ws.add(buildStateless());
