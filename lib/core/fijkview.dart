@@ -118,8 +118,7 @@ class FijkFit {
 /// The most important is a Texture which display the read video frame.
 class FijkView extends StatefulWidget {
   FijkView({
-    Key? key,
-    required this.player,
+    @required this.player,
     this.width,
     this.height,
     this.fit = FijkFit.contain,
@@ -129,27 +128,26 @@ class FijkView extends StatefulWidget {
     this.cover,
     this.fs = true,
     this.onDispose,
-  }) : assert(player != null),
-    super(key: key);
+  }) : assert(player != null);
 
   /// The player that need display video by this [FijkView].
   /// Will be passed to [panelBuilder].
   final FijkPlayer player;
 
   /// builder to build panel Widget
-  final FijkPanelWidgetBuilder? panelBuilder;
+  final FijkPanelWidgetBuilder panelBuilder;
 
   /// This method will be called when fijkView dispose.
   /// FijkData is managed inner FijkView. User can change fijkData in custom panel.
   /// See [panelBuilder]'s second argument.
   /// And check if some value need to be recover on FijkView dispose.
-  final void Function(FijkData)? onDispose;
+  final void Function(FijkData) onDispose;
 
   /// background color
   final Color color;
 
   /// cover image provider
-  final ImageProvider? cover;
+  final ImageProvider cover;
 
   /// How a video should be inscribed into this [FijkView].
   final FijkFit fit;
@@ -159,11 +157,11 @@ class FijkView extends StatefulWidget {
 
   /// Nullable, width of [FijkView]
   /// If null, the weight will be as big as possible.
-  final double? width;
+  final double width;
 
   /// Nullable, height of [FijkView].
   /// If null, the height will be as big as possible.
-  final double? height;
+  final double height;
 
   /// Enable or disable the full screen
   ///
@@ -184,14 +182,14 @@ class _FijkViewState extends State<FijkView> {
   double _vHeight = -1;
   bool _fullScreen = false;
 
-  late FijkData _fijkData ;
+  FijkData _fijkData;
   ValueNotifier<int> paramNotifier = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
     _fijkData = FijkData();
-    Size? s = widget.player.value.size;
+    Size s = widget.player.value.size;
     if (s != null) {
       _vWidth = s.width;
       _vHeight = s.height;
@@ -235,8 +233,8 @@ class _FijkViewState extends State<FijkView> {
       // save width and height to make judgement about whether to
       // request landscape when enter full screen mode
       if (value.size != null && value.prepared) {
-        _vWidth = value.size!.width;
-        _vHeight = value.size!.height;
+        _vWidth = value.size.width;
+        _vHeight = value.size.height;
       }
     }
   }
@@ -259,7 +257,7 @@ class _FijkViewState extends State<FijkView> {
     }
 
     if (widget.onDispose != null) {
-      widget.onDispose!(_fijkData);
+      widget.onDispose(_fijkData);
     }
   }
 
@@ -267,7 +265,7 @@ class _FijkViewState extends State<FijkView> {
       BuildContext context, Animation<double> animation) {
     return AnimatedBuilder(
       animation: animation,
-      builder: (BuildContext context, Widget? child) {
+      builder: (BuildContext context, Widget child) {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           body: _InnerFijkView(
@@ -320,7 +318,7 @@ class _FijkViewState extends State<FijkView> {
   }
 
   @override
-  void didUpdateWidget(covariant FijkView oldWidget) {
+  void didUpdateWidget(Widget oldWidget) {
     super.didUpdateWidget(oldWidget);
     paramNotifier.value = paramNotifier.value + 1;
   }
@@ -344,15 +342,15 @@ class _FijkViewState extends State<FijkView> {
 
 class _InnerFijkView extends StatefulWidget {
   _InnerFijkView({
-    required this.fijkViewState,
-    required this.fullScreen,
-    required this.cover,
-    required this.data,
+    @required this.fijkViewState,
+    @required this.fullScreen,
+    @required this.cover,
+    @required this.data,
   }) : assert(fijkViewState != null);
 
   final _FijkViewState fijkViewState;
   final bool fullScreen;
-  final ImageProvider? cover;
+  final ImageProvider cover;
   final FijkData data;
 
   @override
@@ -360,11 +358,11 @@ class _InnerFijkView extends StatefulWidget {
 }
 
 class __InnerFijkViewState extends State<_InnerFijkView> {
-  late FijkPlayer _player;
-  FijkPanelWidgetBuilder? _panelBuilder;
-  Color? _color;
-  FijkFit _fit = FijkFit.contain;
-  int? _textureId;
+  FijkPlayer _player;
+  FijkPanelWidgetBuilder _panelBuilder;
+  Color _color;
+  FijkFit _fit;
+  int _textureId;
   double _vWidth = -1;
   double _vHeight = -1;
   bool _vFullScreen = false;
@@ -385,13 +383,13 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
   FijkView get fView => widget.fijkViewState.widget;
 
   void _voidValueListener() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) => _fijkValueListener());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fijkValueListener());
   }
 
   void _fijkValueListener() {
     if (!mounted) return;
 
-    FijkPanelWidgetBuilder? panelBuilder = fView.panelBuilder;
+    FijkPanelWidgetBuilder panelBuilder = fView.panelBuilder;
     Color color = fView.color;
     FijkFit fit = widget.fullScreen ? fView.fsFit : fView.fit;
     int textureId = widget.fijkViewState._textureId;
@@ -405,8 +403,8 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
     bool videoRender = value.videoRenderStart;
 
     if (value.size != null && value.prepared) {
-      width = value.size!.width;
-      height = value.size!.height;
+      width = value.size.width;
+      height = value.size.height;
     }
 
     if (width != _vWidth ||
@@ -492,13 +490,13 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
   /// calculate Texture offset
   Offset getTxOffset(BoxConstraints constraints, Size childSize, FijkFit fit) {
     final Alignment resolvedAlignment = fit.alignment;
-    final Offset diff = (constraints.biggest - childSize) as Offset;
+    final Offset diff = constraints.biggest - childSize;
     return resolvedAlignment.alongOffset(diff);
   }
 
   Widget buildTexture() {
-    Widget tex = _textureId != null && _textureId! > 0 ? Texture(textureId: _textureId!) : Container();
-    if (_degree != 0 && _textureId != null && _textureId! > 0) {
+    Widget tex = _textureId > 0 ? Texture(textureId: _textureId) : Container();
+    if (_degree != 0 && _textureId > 0) {
       return RotatedBox(
         quarterTurns: _degree ~/ 90,
         child: tex,
@@ -524,8 +522,8 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
     FijkValue value = _player.value;
     FijkData data = widget.data;
     if (value.size != null && value.prepared) {
-      _vWidth = value.size!.width;
-      _vHeight = value.size!.height;
+      _vWidth = value.size.width;
+      _vHeight = value.size.height;
     }
     _videoRender = value.videoRenderStart;
 
@@ -536,7 +534,7 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
       final Rect pos = Rect.fromLTWH(
           offset.dx, offset.dy, childSize.width, childSize.height);
 
-      final ws = <Widget>[
+      List ws = <Widget>[
         Container(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
@@ -554,14 +552,14 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
         ws.add(Positioned.fromRect(
           rect: pos,
           child: Image(
-            image: widget.cover!,
+            image: widget.cover,
             fit: BoxFit.fill,
           ),
         ));
       }
 
       if (_panelBuilder != null) {
-        ws.add(_panelBuilder!(_player, data, ctx, constraints.biggest, pos));
+        ws.add(_panelBuilder(_player, data, ctx, constraints.biggest, pos));
       }
       return Stack(
         children: ws,
