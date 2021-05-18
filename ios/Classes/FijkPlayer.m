@@ -572,7 +572,6 @@ static int renderType = 0;
     } else if ([@"setLoop" isEqualToString:call.method]) {
         int loopCount = [argsMap[@"loop"] intValue];
         [_ijkMediaPlayer setLoop:loopCount];
-        result(nil);
     } else if ([@"setSpeed" isEqualToString:call.method]) {
         float speed = [argsMap[@"speed"] doubleValue];
         [_ijkMediaPlayer setSpeed:speed];
